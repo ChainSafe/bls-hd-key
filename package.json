@@ -1,7 +1,7 @@
 {
-    "name": "bls-keygen",
+    "name": "bls-hd-key",
     "version": "0.0.1",
-    "description": "Typescript key management tool that works in the browser",
+    "description": "BLS KDF and HD wallet utilities",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
@@ -18,14 +18,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/ChainSafe/bls-ts-key-mgmt.git"
+        "url": "git+https://github.com/ChainSafe/bls-hd-key.git"
     },
     "author": "ChainSafe Systems",
     "license": "Apache-2.0",
     "bugs": {
-        "url": "https://github.com/ChainSafe/bls-ts-key-mgmt/issues"
+        "url": "https://github.com/ChainSafe/bls-hd-key/issues"
     },
-    "homepage": "https://github.com/ChainSafe/bls-ts-key-mgmt#readme",
+    "homepage": "https://github.com/ChainSafe/bls-hd-key#readme",
     "devDependencies": {
         "@babel/cli": "^7.2.3",
         "@babel/core": "^7.3.3",
@@ -57,7 +57,6 @@
     "dependencies": {
         "assert": "^2.0.0",
         "bcrypto": "^4.2.6",
-        "bip39": "^3.0.2",
         "bn.js": "^5.0.0",
         "buffer": "^5.4.3"
     }

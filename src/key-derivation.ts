@@ -1,7 +1,9 @@
-import BN from "bn.js";
-import {getHkdf} from "./crypto";
+import assert from "assert";
 import SHA256 from "bcrypto/lib/sha256";
+import BN from "bn.js";
 import {Buffer} from "buffer";
+
+import {getHkdf} from "./crypto";
 
 export function deriveMasterSK(ikm: Buffer): Buffer {
   const okm = getHkdf(ikm, 48, Buffer.from("BLS-SIG-KEYGEN-SALT-", "utf-8"));
@@ -10,13 +12,14 @@ export function deriveMasterSK(ikm: Buffer): Buffer {
   return Buffer.from(okmBN.mod(r).toArray("be", 32));
 }
 
-export function deriveChildSK(parentSK: Buffer, index: BN): Buffer {
+export function deriveChildSK(parentSK: Buffer, index: number): Buffer {
+  assert(index >= 0 && index < 4294967296, "index must be 0 <= i < 2**32");
   const compressedLamportPK = parentSKToLamportPK(parentSK, index);
   return deriveMasterSK(compressedLamportPK);
 }
 
-function parentSKToLamportPK(parentSK: Buffer, index: BN): Buffer {
-  const salt = Buffer.from(index.toArray("be", 32));
+function parentSKToLamportPK(parentSK: Buffer, index: number): Buffer {
+  const salt = (new BN(index)).toArrayLike(Buffer, "be", 4);
   const ikm = Buffer.from(parentSK);
   const lamport0 = ikmToLamportSK(ikm, salt);
   const notIkm = Buffer.from(ikm.map((value) => ~value));
@@ -29,4 +32,10 @@ function parentSKToLamportPK(parentSK: Buffer, index: BN): Buffer {
 function ikmToLamportSK(ikm: Buffer, salt: Buffer): Buffer[] {
   const okm: Buffer = getHkdf(ikm, 8160, salt);
   return Array.from(new Array(255), (_, i) => okm.slice(i*32, (i+1)*32));
+}
+
+export function deriveChildSKMultiple(parentSK: Buffer, indices: number[]): Buffer {
+  let key = parentSK;
+  indices.forEach(i => key = deriveChildSK(key, i));
+  return key;
 }
