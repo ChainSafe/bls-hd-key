@@ -1,14 +1,19 @@
-# BLS KDF & HD Key Utilities
+# BLS HD Key Utilities
 
 ![npm (tag)](https://img.shields.io/npm/v/bls-hd-key/latest)
 [![Discord](https://img.shields.io/discord/593655374469660673.svg?label=Discord&logo=discord)](https://discord.gg/aMxzVcr)
 ![GitHub](https://img.shields.io/github/license/chainsafe/bls-hd-key)
 
-Utility functions for BLS key derivation and managing deterministic account heirarchies.
+Utility functions for managing BLS heirarchical deterministic accounts.
 
-Implementation is following EIPS: [EIP-2334](https://github.com/ethereum/EIPs/pull/2334), [EIP-2333](https://github.com/ethereum/EIPs/pull/2333)
+1. Create a master private key from entropy
+2. Create a child private key from a private key and index
+3. Convert a standard path into an array of indices
+4. Create a decendent private key from a private key and array of indices
 
-For common use-cases / higher-level interface, see [@chainsafe/bls-keygen](https://github.com/chainsafe/bls-keygen).
+Implementation is following EIPS: [EIP-2334](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-2334.md), [EIP-2333](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-2333.md)
+
+For a higher-level interface, see [@chainsafe/bls-keygen](https://github.com/chainsafe/bls-keygen).
 
 ### Example
 ```typescript
@@ -25,27 +30,39 @@ const masterKey: Buffer = deriveMasterSK(entropy);
 const childIndex: number = ...;
 const childKey: Buffer = deriveChildSK(masterKey, childIndex);
 
+// Convert a "path" into an array of indices (using validation rules of EIP-2334)
+
+cont path = "m/12381/3600/0/0";
+const childIndices: number[] = pathToIndices(path);
+
+// Convert a "path" into an array of indices (validating an alternate key type)
+
+const eth1KeyType = 60;
+cont path = "m/12381/60/0/0";
+const childIndices: number[] = pathToIndices(path, eth1KeyType);
+
 // Create a child private key `childIndices.length` levels deep
 
 const childIndices: number[] = [...];
 const childKey = deriveChildSKMultiple(masterKey, childIndices);
 
-// Convert a "path" into an array of indices (using validation rules of EIP-2334)
+// Compose functions to derive a child key from entropy and a path
 
-cont path = "m/12381/60/0/0";
-const childIndices: number[] = pathToIndices(path);
+const entropy: Buffer = Buffer.from(...);
+cont path = "m/12381/3600/0/0";
+const childKey = deriveChildSKMultiple(deriveMasterSK(entropy), pathToIndices(path));
 
 ```
 
-### Contrubuting?
+### Contrubuting
 
 Requirements:
 - nodejs
 - yarn
 
 ```bash
-    yarn install
-    yarn run test
+yarn install
+yarn run test
 ```
 
 ### License
