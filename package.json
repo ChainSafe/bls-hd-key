@@ -1,5 +1,5 @@
 {
-    "name": "bls-hd-key",
+    "name": "@chainsafe/bls-hd-key",
     "version": "0.0.1",
     "description": "BLS KDF and HD wallet utilities",
     "main": "lib/index.js",
