@@ -1,6 +1,6 @@
 # BLS HD Key Utilities
 
-![npm (tag)](https://img.shields.io/npm/v/bls-hd-key/latest)
+![npm (tag)](https://img.shields.io/npm/v/@chainsafe/bls-hd-key/latest)
 [![Discord](https://img.shields.io/discord/593655374469660673.svg?label=Discord&logo=discord)](https://discord.gg/aMxzVcr)
 ![GitHub](https://img.shields.io/github/license/chainsafe/bls-hd-key)
 
@@ -18,7 +18,7 @@ For a higher-level interface, see [@chainsafe/bls-keygen](https://github.com/cha
 ### Example
 ```typescript
 
-import {deriveMasterSK, deriveChildSK, deriveChildSKMultiple, pathToIndices} from "bls-hd-key";
+import {deriveMasterSK, deriveChildSK, deriveChildSKMultiple, pathToIndices} from "@chainsafe/bls-hd-key";
 
 // Create master private key (according to EIP-2333)
 
