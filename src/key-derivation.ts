@@ -31,7 +31,7 @@ function parentSKToLamportPK(parentSK: Buffer, index: number): Buffer {
 
 function ikmToLamportSK(ikm: Buffer, salt: Buffer): Buffer[] {
   const okm: Buffer = getHkdf(ikm, 8160, salt);
-  return Array.from(new Array(255), (_, i) => okm.slice(i*32, (i+1)*32));
+  return Array.from({length: 255}, (_, i) => okm.slice(i*32, (i+1)*32));
 }
 
 export function deriveChildSKMultiple(parentSK: Buffer, indices: number[]): Buffer {
