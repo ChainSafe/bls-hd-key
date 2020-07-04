@@ -3,6 +3,8 @@
 ![npm (tag)](https://img.shields.io/npm/v/@chainsafe/bls-hd-key/latest)
 [![Discord](https://img.shields.io/discord/593655374469660673.svg?label=Discord&logo=discord)](https://discord.gg/aMxzVcr)
 ![GitHub](https://img.shields.io/github/license/chainsafe/bls-hd-key)
+![ES Version](https://img.shields.io/badge/ES-2015-yellow)
+![Node Version](https://img.shields.io/badge/node-10.x-green)
 
 Utility functions for managing BLS heirarchical deterministic accounts.
 
