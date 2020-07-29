@@ -6,7 +6,7 @@ import {Buffer} from "buffer";
 function ikmToLamportSK(ikm: Buffer, salt: Buffer): Buffer[] {
   const bIKM = Buffer.from(ikm);
   const prk = HKDF.extract(SHA256, bIKM, salt);
-  const okm = HKDF.expand(SHA256, prk, Buffer.alloc(0), 8160);
+  const okm = HKDF.expand(SHA256, prk, Buffer.alloc(0), 8160); // 8160 = 255 * 32
   return Array.from({length: 255}, (_, i) => okm.slice(i*32, (i+1)*32));
 }
 
