@@ -21,7 +21,7 @@ describe("key derivation", function () {
         const seed = Buffer.from(testVector.seed.replace("0x", ""), "hex");
         const expectedMasterSK = (new BN(testVector.master_SK)).toArrayLike(Buffer, "be");
         const masterSK = deriveMasterSK(seed);
-        expect(masterSK).to.be.deep.equal(expectedMasterSK);
+        expect(masterSK.toString("hex")).to.be.deep.equal(expectedMasterSK.toString("hex"));
       });
     });
 
