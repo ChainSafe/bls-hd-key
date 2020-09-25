@@ -21,15 +21,21 @@ function parentSKToLamportPK(parentSK: Buffer, index: number): Buffer {
 }
 
 function hkdfModR(ikm: Buffer, keyInfo: Buffer = Buffer.alloc(0)): Buffer {
-  const prk = HKDF.extract(
-    SHA256,
-    Buffer.concat([ikm, Buffer.alloc(1)]),
-    Buffer.from("BLS-SIG-KEYGEN-SALT-", "ascii")
-  );
-  const okm = HKDF.expand(SHA256, prk, Buffer.concat([keyInfo, Buffer.from([0, 48])]), 48);
-  const okmBN = new BN(okm, "hex", "be");
-  const r = new BN("52435875175126190479447740508185965837690552500527637822603658699938581184513");
-  return Buffer.from(okmBN.mod(r).toArray("be", 32));
+  let salt = Buffer.from("BLS-SIG-KEYGEN-SALT-", "ascii");
+  let sk = new BN(0);
+  while (sk.eqn(0)) {
+    salt = SHA256.digest(salt);
+    const prk = HKDF.extract(
+      SHA256,
+      Buffer.concat([ikm, Buffer.alloc(1)]),
+      salt
+    );
+    const okm = HKDF.expand(SHA256, prk, Buffer.concat([keyInfo, Buffer.from([0, 48])]), 48);
+    const okmBN = new BN(okm, "hex", "be");
+    const r = new BN("52435875175126190479447740508185965837690552500527637822603658699938581184513");
+    sk = okmBN.mod(r);
+  }
+  return Buffer.from(sk.toArray("be", 32));
 }
 
 export function deriveChildSK(parentSK: Buffer, index: number): Buffer {
