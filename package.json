@@ -56,7 +56,7 @@
     },
     "dependencies": {
         "assert": "^2.0.0",
-        "bcrypto": "^5.0.4",
+        "bcrypto": "^5.4.0",
         "bn.js": "^5.1.1",
         "buffer": "^5.4.3"
     }
