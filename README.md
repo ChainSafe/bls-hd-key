@@ -3,8 +3,8 @@
 ![npm (tag)](https://img.shields.io/npm/v/@chainsafe/bls-hd-key/latest)
 [![Discord](https://img.shields.io/discord/593655374469660673.svg?label=Discord&logo=discord)](https://discord.gg/aMxzVcr)
 ![GitHub](https://img.shields.io/github/license/chainsafe/bls-hd-key)
-![ES Version](https://img.shields.io/badge/ES-2015-yellow)
-![Node Version](https://img.shields.io/badge/node-10.x-green)
+![ES Version](https://img.shields.io/badge/ES-2020-yellow)
+![Node Version](https://img.shields.io/badge/node-12.x-green)
 
 Utility functions for managing BLS heirarchical deterministic accounts.
 
@@ -24,13 +24,13 @@ import {deriveMasterSK, deriveChildSK, deriveChildSKMultiple, pathToIndices} fro
 
 // Create master private key (according to EIP-2333)
 
-const entropy: Buffer = Buffer.from(...);
-const masterKey: Buffer = deriveMasterSK(entropy);
+const entropy: Uint8Array = Uint8Array.from(...);
+const masterKey: Uint8Array = deriveMasterSK(entropy);
 
 // Create child private key one level deep
 
 const childIndex: number = ...;
-const childKey: Buffer = deriveChildSK(masterKey, childIndex);
+const childKey: Uint8Array = deriveChildSK(masterKey, childIndex);
 
 // Convert a "path" into an array of indices (using validation rules of EIP-2334)
 
@@ -50,7 +50,7 @@ const childKey = deriveChildSKMultiple(masterKey, childIndices);
 
 // Compose functions to derive a child key from entropy and a path
 
-const entropy: Buffer = Buffer.from(...);
+const entropy: Uint8Array = Uint8Array.from(...);
 cont path = "m/12381/3600/0/0";
 const childKey = deriveChildSKMultiple(deriveMasterSK(entropy), pathToIndices(path));
 

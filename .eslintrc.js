@@ -2,6 +2,9 @@ const path = require('path');
 
 module.exports = {
   root: true,
+  globals: {
+    BigInt: true,
+  },
   env: {
     browser: true,
     es6: true,

@@ -1,7 +1,8 @@
 /* eslint-disable camelcase */
 import {expect} from "chai";
+import {hexToBytes} from "@noble/hashes/utils";
+
 import {deriveChildSK, deriveMasterSK} from "../src/";
-import BN from "bn.js";
 import testVectorsJson from "./vectors/test-vectors.json";
 
 interface IKdfTestVector {
@@ -18,10 +19,10 @@ describe("key derivation", function () {
 
     testVectors.forEach((testVector, index) => {
       it(`test vector #${index}`, function () {
-        const seed = Buffer.from(testVector.seed.replace("0x", ""), "hex");
-        const expectedMasterSK = (new BN(testVector.master_SK)).toArrayLike(Buffer, "be");
+        const seed = hexToBytes(testVector.seed.replace("0x", ""));
+        const expectedMasterSK = hexToBytes(BigInt(testVector.master_SK).toString(16).padStart(64, "0"));
         const masterSK = deriveMasterSK(seed);
-        expect(masterSK.toString("hex")).to.be.deep.equal(expectedMasterSK.toString("hex"));
+        expect(masterSK).to.be.deep.equal(expectedMasterSK);
       });
     });
 
@@ -31,11 +32,11 @@ describe("key derivation", function () {
 
     testVectors.forEach((testVector, index) => {
       it(`test vector #${index}`, function () {
-        const parentSK = (new BN(testVector.master_SK)).toArrayLike(Buffer, "be");
+        const parentSK = hexToBytes(BigInt(testVector.master_SK).toString(16).padStart(64, "0"));
         const index = testVector.child_index;
-        const expectedChildSK = (new BN(testVector.child_SK)).toArrayLike(Buffer, "be");
+        const expectedChildSK = hexToBytes(BigInt(testVector.child_SK).toString(16).padStart(64, "0"));
         const childSK = deriveChildSK(parentSK, index);
-        expect(childSK.toString("hex")).to.be.deep.equal(expectedChildSK.toString("hex"));
+        expect(childSK).to.be.deep.equal(expectedChildSK);
       });
     });
 

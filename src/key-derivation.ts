@@ -1,46 +1,47 @@
-import SHA256 from "bcrypto/lib/sha256";
-import HKDF from "bcrypto/lib/hkdf";
-import BN from "bn.js";
-import {Buffer} from "buffer";
 
-function ikmToLamportSK(ikm: Buffer, salt: Buffer): Buffer[] {
-  const bIKM = Buffer.from(ikm);
-  const prk = HKDF.extract(SHA256, bIKM, salt);
-  const okm = HKDF.expand(SHA256, prk, Buffer.alloc(0), 8160); // 8160 = 255 * 32
+import {hkdf} from "@noble/hashes/hkdf";
+import {sha256} from "@noble/hashes/sha256";
+import {bytesToHex, concatBytes, hexToBytes, utf8ToBytes} from "@noble/hashes/utils";
+
+function ikmToLamportSK(ikm: Uint8Array, salt: Uint8Array): Uint8Array[] {
+  const okm = hkdf(sha256, ikm, salt, new Uint8Array(0), 8160); // 8160 = 255 * 32
   return Array.from({length: 255}, (_, i) => okm.slice(i*32, (i+1)*32));
 }
 
-function parentSKToLamportPK(parentSK: Buffer, index: number): Buffer {
-  const salt = (new BN(index)).toArrayLike(Buffer, "be", 4);
-  const ikm = Buffer.from(parentSK);
+function parentSKToLamportPK(parentSK: Uint8Array, index: number): Uint8Array {
+  const salt = new Uint8Array(4);
+  new DataView(salt.buffer).setUint32(0, index, false);
+
+  const ikm = parentSK;
   const lamport0 = ikmToLamportSK(ikm, salt);
-  const notIkm = Buffer.from(ikm.map((value) => ~value));
+  const notIkm = Uint8Array.from(ikm.map((value) => ~value));
   const lamport1 = ikmToLamportSK(notIkm, salt);
-  const lamportPK = lamport0.concat(lamport1).map((value) => SHA256.digest(value));
-  return SHA256.digest(Buffer.concat(lamportPK));
+  const lamportPK = lamport0.concat(lamport1).map((value) => sha256(value));
+  return sha256(concatBytes(...lamportPK));
 }
 
-function hkdfModR(ikm: Buffer, keyInfo: Buffer = Buffer.alloc(0)): Buffer {
-  let salt = Buffer.from("BLS-SIG-KEYGEN-SALT-", "ascii");
-  let sk = new BN(0);
-  while (sk.eqn(0)) {
-    salt = SHA256.digest(salt);
-    const prk = HKDF.extract(
-      SHA256,
-      Buffer.concat([ikm, Buffer.alloc(1)]),
-      salt
+function hkdfModR(ikm: Uint8Array, keyInfo = new Uint8Array(0)): Uint8Array {
+  let salt = utf8ToBytes("BLS-SIG-KEYGEN-SALT-");
+  let sk = BigInt(0);
+  while (sk === BigInt(0)) {
+    salt = sha256(salt);
+    const okm = hkdf(
+      sha256,
+      concatBytes(ikm, new Uint8Array(1)),
+      salt,
+      concatBytes(keyInfo, Uint8Array.from([0, 48])),
+      48
     );
-    const okm = HKDF.expand(SHA256, prk, Buffer.concat([keyInfo, Buffer.from([0, 48])]), 48);
-    const okmBN = new BN(okm, "hex", "be");
-    const r = new BN("52435875175126190479447740508185965837690552500527637822603658699938581184513");
-    sk = okmBN.mod(r);
+    const okmBN = BigInt("0x" + bytesToHex(okm));
+    const r = BigInt("52435875175126190479447740508185965837690552500527637822603658699938581184513");
+    sk = okmBN % r;
   }
-  return Buffer.from(sk.toArray("be", 32));
+  return hexToBytes(sk.toString(16).padStart(64, "0"));
 }
 
-export function deriveChildSK(parentSK: Buffer, index: number): Buffer {
-  if (!Buffer.isBuffer(parentSK) || parentSK.length !== 32) {
-    throw new Error("parentSK must be a Buffer of 32 bytes");
+export function deriveChildSK(parentSK: Uint8Array, index: number): Uint8Array {
+  if (!(parentSK instanceof Uint8Array) || parentSK.length !== 32) {
+    throw new Error("parentSK must be a Uint8Array of 32 bytes");
   }
   if (!Number.isSafeInteger(index) || index < 0 || index >= 2 ** 32) {
     throw new Error("index must be 0 <= i < 2**32");
@@ -49,9 +50,9 @@ export function deriveChildSK(parentSK: Buffer, index: number): Buffer {
   return hkdfModR(compressedLamportPK);
 }
 
-export function deriveMasterSK(ikm: Buffer): Buffer {
-  if (!Buffer.isBuffer(ikm)) {
-    throw new Error("ikm must be a Buffer");
+export function deriveMasterSK(ikm: Uint8Array): Uint8Array {
+  if (!(ikm instanceof Uint8Array)) {
+    throw new Error("ikm must be a Uint8Array");
   }
   if (ikm.length < 32) {
     throw new Error("ikm must be >= 32 bytes");
@@ -59,7 +60,7 @@ export function deriveMasterSK(ikm: Buffer): Buffer {
   return hkdfModR(ikm);
 }
 
-export function deriveChildSKMultiple(parentSK: Buffer, indices: number[]): Buffer {
+export function deriveChildSKMultiple(parentSK: Uint8Array, indices: number[]): Uint8Array {
   let key = parentSK;
   indices.forEach(i => key = deriveChildSK(key, i));
   return key;

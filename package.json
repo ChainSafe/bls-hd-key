@@ -55,9 +55,6 @@
         "webpack": "^4.42.0"
     },
     "dependencies": {
-        "assert": "^2.0.0",
-        "bcrypto": "^5.4.0",
-        "bn.js": "^5.1.1",
-        "buffer": "^5.4.3"
+        "@noble/hashes": "^1.0.0"
     }
 }
