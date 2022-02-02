@@ -12,9 +12,7 @@
         "lint": "eslint --ext .ts src/",
         "check-types": "tsc --noEmit",
         "prebuild": "yarn run clean",
-        "build": "yarn run build:lib && yarn run build:types",
-        "build:lib": "babel src -x .ts -d lib --source-maps",
-        "build:types": "tsc --emitDeclarationOnly --declaration --outDir lib -p tsconfig.build.json"
+        "build": "tsc --outDir lib -p tsconfig.build.json"
     },
     "repository": {
         "type": "git",
@@ -27,12 +25,6 @@
     },
     "homepage": "https://github.com/ChainSafe/bls-hd-key#readme",
     "devDependencies": {
-        "@babel/cli": "^7.8.3",
-        "@babel/core": "^7.8.3",
-        "@babel/preset-env": "^7.8.3",
-        "@babel/preset-typescript": "^7.8.3",
-        "@babel/register": "^7.8.3",
-        "@types/bn.js": "^4.11.6",
         "@types/chai": "^4.2.10",
         "@types/mocha": "^5.2.5",
         "@types/node": "^13.7.7",
