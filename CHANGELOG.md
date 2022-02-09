@@ -1,3 +1,12 @@
+## 0.3.0 (2022-02-08)
+
+### BREAKING CHANGES
+
+- Replace `Buffer` with `Uint8Array` in public APIs
+### Chores
+
+- remove babel ([#30](https://github.com/ChainSafe/bls-hd-key/pull/30))
+- simplify dependencies([#28](https://github.com/ChainSafe/bls-hd-key/pull/28))
 ## 0.2.1 (2021-04-20)
 
 ### Chores
